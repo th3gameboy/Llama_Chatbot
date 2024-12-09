@@ -9,6 +9,9 @@ import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint;
 import com.facebook.react.defaults.DefaultReactNativeHost;
 import com.facebook.soloader.SoLoader;
 import java.util.List;
+import java.util.ArrayList;
+import com.llamachatbotapp.crypto.CryptoPackage;
+import com.llamachatbotapp.download.DownloadPackage;
 
 public class MainApplication extends Application implements ReactApplication {
 
@@ -23,6 +26,8 @@ public class MainApplication extends Application implements ReactApplication {
         protected List<ReactPackage> getPackages() {
           @SuppressWarnings("UnnecessaryLocalVariable")
           List<ReactPackage> packages = new PackageList(this).getPackages();
+          packages.add(new CryptoPackage());
+          packages.add(new DownloadPackage());
           return packages;
         }
 
