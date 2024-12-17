@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import { View, Text, StyleSheet, TouchableNativeFeedback, Animated } from 'react-native';
 import type { DownloadProgress as DownloadProgressType } from '../../types/download';
 
 interface DownloadProgressProps {
@@ -35,6 +35,28 @@ export const DownloadProgress: React.FC<DownloadProgressProps> = ({
   const percentage = Math.round(progress.progress);
   const isActive = status === 'downloading';
   const isPaused = status === 'paused';
+  const progressAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.timing(progressAnim, {
+      toValue: percentage,
+      duration: 300,
+      useNativeDriver: false,
+    }).start();
+  }, [percentage]);
+
+  const renderButton = (text: string, isPrimary: boolean, onPress: () => void) => (
+    <TouchableNativeFeedback
+      onPress={onPress}
+      background={TouchableNativeFeedback.Ripple('#FFFFFF', false)}
+    >
+      <View style={[styles.button, isPrimary ? styles.primaryButton : styles.secondaryButton]}>
+        <Text style={isPrimary ? styles.primaryButtonText : styles.secondaryButtonText}>
+          {text}
+        </Text>
+      </View>
+    </TouchableNativeFeedback>
+  );
 
   return (
     <View style={styles.container}>
@@ -44,7 +66,17 @@ export const DownloadProgress: React.FC<DownloadProgressProps> = ({
       </View>
 
       <View style={styles.progressBarContainer}>
-        <View style={[styles.progressBar, { width: `${percentage}%` }]} />
+        <Animated.View 
+          style={[
+            styles.progressBar, 
+            { 
+              width: progressAnim.interpolate({
+                inputRange: [0, 100],
+                outputRange: ['0%', '100%']
+              })
+            }
+          ]} 
+        />
       </View>
 
       <View style={styles.stats}>
@@ -71,20 +103,8 @@ export const DownloadProgress: React.FC<DownloadProgressProps> = ({
       <View style={styles.buttons}>
         {(isActive || isPaused) && (
           <>
-            <TouchableOpacity 
-              style={[styles.button, styles.primaryButton]} 
-              onPress={onPauseResume}
-            >
-              <Text style={styles.primaryButtonText}>
-                {isPaused ? 'Resume' : 'Pause'}
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity 
-              style={[styles.button, styles.secondaryButton]} 
-              onPress={onCancel}
-            >
-              <Text style={styles.secondaryButtonText}>Cancel</Text>
-            </TouchableOpacity>
+            {renderButton(isPaused ? 'Resume' : 'Pause', true, onPauseResume)}
+            {renderButton('Cancel', false, onCancel)}
           </>
         )}
       </View>

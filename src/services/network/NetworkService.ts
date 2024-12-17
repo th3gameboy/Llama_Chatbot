@@ -40,6 +40,37 @@ export class NetworkService {
         return state.type === 'wifi' && state.isConnected === true;
     }
 
+    async waitForWifi(timeoutMs: number = this.config.timeout): Promise<boolean> {
+        return new Promise((resolve) => {
+            let timeout: ReturnType<typeof setTimeout>;
+            let retryCount = 0;
+
+            const checkWifi = async () => {
+                const isWifi = await this.isWifiConnected();
+                if (isWifi) {
+                    cleanup();
+                    resolve(true);
+                } else if (retryCount < this.config.maxRetries) {
+                    retryCount++;
+                    setTimeout(checkWifi, this.config.retryDelay);
+                } else {
+                    cleanup();
+                    resolve(false);
+                }
+            };
+
+            const cleanup = () => {
+                if (timeout) clearTimeout(timeout);
+            };
+
+            checkWifi();
+            timeout = setTimeout(() => {
+                cleanup();
+                resolve(false);
+            }, timeoutMs);
+        });
+    }
+
     async waitForConnection(timeoutMs: number = this.config.timeout): Promise<boolean> {
         return new Promise((resolve) => {
             let timeout: ReturnType<typeof setTimeout>;

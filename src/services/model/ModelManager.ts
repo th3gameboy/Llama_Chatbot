@@ -154,7 +154,6 @@ export class ModelManager {
                 ...DOWNLOAD_CONFIG.downloadOptions,
                 path: tmpPath,
                 appendExt: '',
-                IOSBackgroundTask: true,
                 indicator: true,
                 overwrite: true
             }).fetch(

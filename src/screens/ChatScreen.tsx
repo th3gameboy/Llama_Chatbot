@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { View, StyleSheet, Alert, ActivityIndicator } from 'react-native';
-import { GiftedChat, IMessage } from 'react-native-gifted-chat';
+import { View, StyleSheet, Alert, ActivityIndicator, Text } from 'react-native';
+import { GiftedChat, IMessage, Send } from 'react-native-gifted-chat';
 import { ChatMessage } from '../components/ChatMessage';
 import { LlamaService } from '../services';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -182,6 +182,19 @@ export const ChatScreen: React.FC = () => {
             isBot={props.currentMessage.user._id === 2}
           />
         )}
+        timeTextStyle={{
+          left: { color: '#808080' },
+          right: { color: '#808080' },
+        }}
+        renderSend={(props) => (
+          <Send {...props} containerStyle={styles.sendContainer}>
+            <Text style={styles.sendText}>Send</Text>
+          </Send>
+        )}
+        textInputProps={{
+          style: styles.textInput,
+          placeholderTextColor: '#808080',
+        }}
       />
     </View>
   );
@@ -192,8 +205,30 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FFFFFF',
   },
- centerContent: {
+  centerContent: {
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  sendContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 15,
+    marginBottom: 5,
+  },
+  sendText: {
+    color: '#000000',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  textInput: {
+    borderColor: '#808080',
+    borderWidth: 1,
+    borderRadius: 20,
+    marginTop: 6,
+    marginHorizontal: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    backgroundColor: '#FFFFFF',
+    color: '#000000',
   },
 }); 
